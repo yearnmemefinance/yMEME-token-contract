@@ -18,7 +18,6 @@ contract YMEME is ERC20VotesComp, Ownable{
     uint public buyFees;
     uint public sellFees;
     uint public totalFee;
-    uint256 public swapTokensAtAmount = 1000e18;
     uint256 public tokenMaxCap = 2_000_000_000 * 10** decimals();
 
     bool public inSwapAndLiquify = false;
@@ -101,10 +100,6 @@ contract YMEME is ERC20VotesComp, Ownable{
 
     function toggleExcludeFromFees(address _address) external isOwnerOrTimelock {
         isExcludedFromTxFees[_address] = !isExcludedFromTxFees[_address];
-    }
-
-    function setSwapTokensAtAmount(uint256 amount) external isOwnerOrTimelock {
-        swapTokensAtAmount = amount;
     }
 
     function setAutomatedMarketMakerPair(address pair, bool value) external isOwnerOrTimelock {

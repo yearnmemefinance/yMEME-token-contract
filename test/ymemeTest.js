@@ -258,7 +258,6 @@ describe("Token", function () {
   it("Should transfer tokens to fee account after swapping", async() => {
     const path = [token.address, wethAddress];
 
-    await token.setSwapTokensAtAmount(ethers.utils.parseEther("10"));
     await token.transfer(accounts[6].address, ethers.utils.parseEther("1000"));
     await token.connect(accounts[6]).approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("1000"));
 
