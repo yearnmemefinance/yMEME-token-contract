@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -11,15 +10,14 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
-import "hardhat/console.sol";
-
-contract Token is ERC20, Ownable{
+contract Token is ERC20VotesComp, Ownable{
     using SafeMath for uint256;
     
     uint public buyFees;
     uint public sellFees;
     uint public totalFee;
-    uint256 public swapTokensAtAmount = 1000e18;
+    uint256 public swapTokensAtAmount = 1_000_000 * 10** decimals();
+    uint256 public tokenMaxCap = 2_000_000_000 * 10** decimals();
 
     bool public inSwapAndLiquify = false;
 
@@ -37,10 +35,10 @@ contract Token is ERC20, Ownable{
         _;
     }
 
-    // constructor(string memory name, string memory symbol, uint _amount, address _router) ERC20(name, symbol) ERC20Permit(name) {
-    constructor(string memory name, string memory symbol, uint _amount, address _router) ERC20(name, symbol) {
-        _mint(msg.sender, _amount);
+    constructor() ERC20("Yearn Meme Finance", "yMEME") ERC20Permit("yMEME") {
+        _mint(msg.sender, 1_000_000_000 * 10 ** decimals());
         feeWallet = msg.sender;
+        address _router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(_router);
 
         WETH = _uniswapV2Router.WETH();
@@ -65,14 +63,14 @@ contract Token is ERC20, Ownable{
         }
         
         bool canSwap = balanceOf(address(this)) >= swapTokensAtAmount;
-        console.log("swap tokens at amount ", swapTokensAtAmount);
-        console.log("contractTokenBalance ", balanceOf(address(this)));
-        console.log("in swap ", inSwapAndLiquify);
-        console.log("can swap ", canSwap);
-        console.log("owner ", owner());
-        console.log("sender ", sender);
-        console.log("recipient ", recipient);
-        console.log("!isAutomatedMarketMakerPair[sender] ", !isAutomatedMarketMakerPair[sender]);
+        // console.log("swap tokens at amount ", swapTokensAtAmount);
+        // console.log("contractTokenBalance ", balanceOf(address(this)));
+        // console.log("in swap ", inSwapAndLiquify);
+        // console.log("can swap ", canSwap);
+        // console.log("owner ", owner());
+        // console.log("sender ", sender);
+        // console.log("recipient ", recipient);
+        // console.log("!isAutomatedMarketMakerPair[sender] ", !isAutomatedMarketMakerPair[sender]);
 
         
         if (
@@ -89,15 +87,15 @@ contract Token is ERC20, Ownable{
         }
 
         uint256 totalContractFee = shouldTakeFee(sender, recipient) ? takeFee(sender, recipient, amount) : 0;
-        console.log("total contract fee ", totalContractFee);
-        console.log("sender ", sender, address(this));
-        console.log("recipient ", recipient);
-        console.log("amount ", amount, balanceOf(sender));
-        console.log("before balance", balanceOf(sender), balanceOf(recipient));
+        // console.log("total contract fee ", totalContractFee);
+        // console.log("sender ", sender, address(this));
+        // console.log("recipient ", recipient);
+        // console.log("amount ", amount, balanceOf(sender));
+        // console.log("before balance", balanceOf(sender), balanceOf(recipient));
         super._transfer(sender, address(this), totalContractFee);
         super._transfer(sender, recipient, amount.sub(totalContractFee));
-        console.log("final balance", balanceOf(sender), balanceOf(recipient));
-        console.log("HERERE 3");
+        // console.log("final balance", balanceOf(sender), balanceOf(recipient));
+        // console.log("HERERE 3");
     }
 
     function swapTokensForEth(uint256 tokenAmount) private {
@@ -109,7 +107,7 @@ contract Token is ERC20, Ownable{
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
         // make the swap
-        console.log("HERERE", tokenAmount);
+        // console.log("HERERE", tokenAmount);
         uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
             tokenAmount,
             0, // accept any amount of ETH
@@ -117,7 +115,7 @@ contract Token is ERC20, Ownable{
             address(this),
             block.timestamp * 2
         );
-        console.log("HERERE 2");
+        // console.log("HERERE 2");
 
     }
 
@@ -141,6 +139,7 @@ contract Token is ERC20, Ownable{
     }
 
     function mint(address _user, uint256 amount) external isOwnerOrTimelock {
+        require(totalSupply().add(amount) <= tokenMaxCap, "Max cap reached");
         _mint(_user, amount);
     }
 

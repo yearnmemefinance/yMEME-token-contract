@@ -46,7 +46,7 @@ describe("Token", function () {
     accounts = await ethers.getSigners();
 
     const TOKEN = await ethers.getContractFactory("Token");
-    token = await TOKEN.deploy("Token", "TOK", ethers.utils.parseEther('1000000000'));
+    token = await TOKEN.deploy();
     await token.deployed();
 
     const GOVERNOR = await ethers.getContractFactory("GovernorAlpha");
