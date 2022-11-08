@@ -34,10 +34,10 @@ contract YMEME is ERC20VotesComp, Ownable{
         _;
     }
 
-    constructor(address _router) ERC20("Yearn Meme Finance", "yMEME") ERC20Permit("yMEME") {
+    constructor() ERC20("Yearn Meme Finance", "yMEME") ERC20Permit("yMEME") {
         _mint(msg.sender, 1_000_000_000 * 10 ** decimals());
         feeWallet = msg.sender;
-
+        address _router = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
         uniswapV2Pair = IUniswapV2Factory(IUniswapV2Router02(_router).factory()).createPair(address(this), IUniswapV2Router02(_router).WETH());
 
         isExcludedFromTxFees[address(this)] = true;

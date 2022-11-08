@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -12,7 +13,7 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 import "hardhat/console.sol";
 
-contract Token is ERC20VotesComp, Ownable{
+contract Token is ERC20, Ownable{
     using SafeMath for uint256;
     
     uint public buyFees;
@@ -36,7 +37,8 @@ contract Token is ERC20VotesComp, Ownable{
         _;
     }
 
-    constructor(string memory name, string memory symbol, uint _amount, address _router) ERC20(name, symbol) ERC20Permit(name) {
+    // constructor(string memory name, string memory symbol, uint _amount, address _router) ERC20(name, symbol) ERC20Permit(name) {
+    constructor(string memory name, string memory symbol, uint _amount, address _router) ERC20(name, symbol) {
         _mint(msg.sender, _amount);
         feeWallet = msg.sender;
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(_router);
@@ -53,11 +55,6 @@ contract Token is ERC20VotesComp, Ownable{
     }
 
     function _transfer( address sender, address recipient, uint256 amount ) internal virtual override {
-        super._transfer(sender, recipient, amount);
-        // if (inSwapAndLiquify) {
-        //     super._transfer(sender, recipient, amount);
-        // }
-
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
         require(balanceOf(sender) >= amount, "ERC20: transfer amount exceeds balance");
@@ -86,7 +83,7 @@ contract Token is ERC20VotesComp, Ownable{
             inSwapAndLiquify = true;
 
             swapTokensForEth(balanceOf(address(this)));
-            // payable(feeWallet).transfer(address(this).balance);
+            payable(feeWallet).transfer(address(this).balance);
 
             inSwapAndLiquify = false;
         }
@@ -179,4 +176,5 @@ contract Token is ERC20VotesComp, Ownable{
         isAutomatedMarketMakerPair[pair] = value;
     }
 
+    receive() external payable { }
 }

@@ -57,7 +57,7 @@ describe("Token", function () {
     const currentTime = Math.floor(Date.now() / 1000)
 
     const TOKEN = await ethers.getContractFactory("YMEME");
-    token = await TOKEN.deploy(UNISWAPV2ROUTERADDRESS);
+    token = await TOKEN.deploy();
     await token.deployed();
 
     uniswapRouter  = await ethers.getContractAt("IUniswapV2Router02", UNISWAPV2ROUTERADDRESS);

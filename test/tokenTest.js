@@ -250,6 +250,7 @@ describe("Token", function () {
     const tokenBalUserBef = await token.balanceOf(accounts[6].address);
     const tokenBalContractBef = await token.balanceOf(token.address);
     const tokenBalFeeWalletBef = await token.balanceOf(accounts[5].address);
+    const ethBalBef = await ethers.provider.getBalance(accounts[5].address);
 
     await uniswapRouter.connect(accounts[6]).swapExactTokensForETHSupportingFeeOnTransferTokens(
       ethers.utils.parseEther("400"),
@@ -265,10 +266,13 @@ describe("Token", function () {
       accounts[6].address,
       new Date().getTime() + 12121212
     )
+    // await token.transfer(token.address, ethers.utils.parseEther("200"));
+    // await token.swapTokensForEth(ethers.utils.parseEther("200"));
 
     const tokenBalUserAft = await token.balanceOf(accounts[6].address);
     const tokenBalContractAft = await token.balanceOf(token.address);
     const tokenBalFeeWalletAft = await token.balanceOf(accounts[5].address);
+    const ethBalAft = await ethers.provider.getBalance(accounts[5].address);
 
     console.log({
       tokenBalUserBef: ethers.utils.formatEther(tokenBalUserBef),
@@ -277,6 +281,8 @@ describe("Token", function () {
       tokenBalContractAft: ethers.utils.formatEther(tokenBalContractAft),
       tokenBalFeeWalletBef: ethers.utils.formatEther(tokenBalFeeWalletBef),
       tokenBalFeeWalletAft: ethers.utils.formatEther(tokenBalFeeWalletAft),
+      ethBalBef: ethers.utils.formatEther(ethBalBef),
+      ethBalAft: ethers.utils.formatEther(ethBalAft),
     })
   })
 });
