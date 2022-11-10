@@ -48,6 +48,7 @@ contract Token is ERC20VotesComp, Ownable{
         uniswapV2Router = _uniswapV2Router;
 
         isExcludedFromTxFees[address(this)] = true;
+        isExcludedFromTxFees[msg.sender] = true;
 
         _setAutomatedMarketMakerPair(uniswapV2Pair, true);
     }

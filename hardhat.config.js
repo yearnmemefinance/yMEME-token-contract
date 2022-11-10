@@ -76,7 +76,10 @@ require("@tenderly/hardhat-tenderly")
             url: "https://rinkeby-light.eth.linkpool.io/",
             accounts: [CONFIG.wallet.PKEY],
         },
-        
+        goerli: {
+            url: "https://ethereum-goerli-rpc.allthatnode.com",
+            accounts: [CONFIG.wallet.PKEY],
+        },
         local: {
             url: 'http://127.0.0.1:8545',
             forking: {
