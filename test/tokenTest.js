@@ -87,6 +87,10 @@ describe("Token", function () {
     const balAft = await token.balanceOf(accounts[0].address)
     expect(balAft).to.equal(balBef.add(ethers.utils.parseUnits("1000", 5)))
     await expect(token.connect(accounts[1]).mint(accounts[1].address, ethers.utils.parseUnits("1000", 5))).to.be.revertedWith("Not owner or timelock")
+    await token.setTimelock(accounts[1].address)
+    await token.connect(accounts[1]).mint(accounts[9].address, ethers.utils.parseUnits("1000", 5))
+    await token.setTimelock("0x0000000000000000000000000000000000000000")
+    await expect(token.connect(accounts[1]).mint(accounts[1].address, ethers.utils.parseUnits("1000", 5))).to.be.revertedWith("Not owner or timelock")
   })
 
   it("Should be able to transfer tokens", async () => {

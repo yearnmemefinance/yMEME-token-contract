@@ -118,17 +118,17 @@ describe("Token", function () {
     })
   })
 
-  it("Should mint new tokens", async () => {
-    tx = await token.mint(account.address, ethers.utils.parseUnits("1000", 18))
-    await tx.wait()
-  })
+//   it("Should mint new tokens", async () => {
+//     tx = await token.mint(account.address, ethers.utils.parseUnits("1000", 18))
+//     await tx.wait()
+//   })
 
-  it("Should add liquidity", async () => {
-    tx = await token.approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("1000000"))
-    await tx.wait()
-    tx = await uniswapRouter.addLiquidityETH(token.address, ethers.utils.parseEther("1000000"), 0, 0, accounts[0].address, (Date.now() + 100000), {value: ethers.utils.parseEther('0.01')}); // provide 1000 WETH + 100000 token liquidity to uniswap
-    await tx.wait()
-  })
+//   it("Should add liquidity", async () => {
+//     tx = await token.approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("1000000"))
+//     await tx.wait()
+//     tx = await uniswapRouter.addLiquidityETH(token.address, ethers.utils.parseEther("1000000"), 0, 0, accounts[0].address, (Date.now() + 100000), {value: ethers.utils.parseEther('0.01')}); // provide 1000 WETH + 100000 token liquidity to uniswap
+//     await tx.wait()
+//   })
 
   it("Should set fee", async () => {
     tx = await token.setFees(200, 400)
@@ -137,57 +137,57 @@ describe("Token", function () {
     await tx.wait()
   })
 
-  it("Should take no tax and tax", async () => {
-    tx = await token.toggleExcludeFromFees(account.address)
-    await tx.wait()
-    tx = await token.transfer("0x000000000000000000000000000000000000dead", ethers.utils.parseEther("100"))
-    await tx.wait()
-    const path = [token.address, wethAddress];
-    tx = await token.approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("100"));
-    await tx.wait()
-    tx = await uniswapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
-      ethers.utils.parseEther("100"),
-      0, // accept any amount of ETH
-      path,
-      account.address,
-      new Date().getTime()
-    )
-    await tx.wait()
-    tx = await uniswapRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
-        0, // accept any amount of Tokens
-        path.reverse(),
-        account.address,
-        new Date().getTime(), {
-            value: ethers.utils.parseEther("0.001")
-        }
-    )
-    await tx.wait()
-  })
+//   it("Should take no tax and tax", async () => {
+//     tx = await token.toggleExcludeFromFees(account.address)
+//     await tx.wait()
+//     tx = await token.transfer("0x000000000000000000000000000000000000dead", ethers.utils.parseEther("100"))
+//     await tx.wait()
+//     const path = [token.address, wethAddress];
+//     tx = await token.approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("100"));
+//     await tx.wait()
+//     tx = await uniswapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
+//       ethers.utils.parseEther("100"),
+//       0, // accept any amount of ETH
+//       path,
+//       account.address,
+//       new Date().getTime()
+//     )
+//     await tx.wait()
+//     tx = await uniswapRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
+//         0, // accept any amount of Tokens
+//         path.reverse(),
+//         account.address,
+//         new Date().getTime(), {
+//             value: ethers.utils.parseEther("0.001")
+//         }
+//     )
+//     await tx.wait()
+//   })
 
-  it("Should claim tokens", async () => {
-    tx = await token.transfer(claim.address, ethers.utils.parseUnits("1000", 18))
-    await tx.wait()
-    tx = await claim.setConversionRatio(100)
-    await tx.wait()
-    tx = await burnToken.approve(claim.address, ethers.utils.parseUnits("1000", 18))
-    await tx.wait()
-    tx = await claim.claim(ethers.utils.parseUnits("1000", 9))
-    await tx.wait()
-  })
+//   it("Should claim tokens", async () => {
+//     tx = await token.transfer(claim.address, ethers.utils.parseUnits("1000", 18))
+//     await tx.wait()
+//     tx = await claim.setConversionRatio(100)
+//     await tx.wait()
+//     tx = await burnToken.approve(claim.address, ethers.utils.parseUnits("1000", 18))
+//     await tx.wait()
+//     tx = await claim.claim(ethers.utils.parseUnits("1000", 9))
+//     await tx.wait()
+//   })
 
-  it("Should swap tokens present in token contract", async () => {
-    const path = [token.address, wethAddress];
-    tx = await token.setSwapTokensAtAmount(ethers.utils.parseUnits("150", 18))
-    await tx.wait()
-    tx = await token.approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("100"));
-    await tx.wait()
-    tx = await uniswapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
-        ethers.utils.parseEther("100"),
-        0, // accept any amount of ETH
-        path,
-        account.address,
-        new Date().getTime()
-      )
-      await tx.wait()
-  })
+//   it("Should swap tokens present in token contract", async () => {
+//     const path = [token.address, wethAddress];
+//     tx = await token.setSwapTokensAtAmount(ethers.utils.parseUnits("150", 18))
+//     await tx.wait()
+//     tx = await token.approve(UNISWAPV2ROUTERADDRESS, ethers.utils.parseEther("100"));
+//     await tx.wait()
+//     tx = await uniswapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
+//         ethers.utils.parseEther("100"),
+//         0, // accept any amount of ETH
+//         path,
+//         account.address,
+//         new Date().getTime()
+//       )
+//       await tx.wait()
+//   })
 });

@@ -66,24 +66,59 @@ describe("Token", function () {
     })
   })
 
-  it("Should set conversion ratio", async () => {
-    // 1 burn token -> 1000 claim token
-    await claim.setConversionRatio(100000);
+  // it("Should set conversion ratio", async () => {
+  //   // 1 burn token -> 1000 claim token
+  //   await claim.setConversionRatio(100000);
+  // })
+
+  // it("Should claim tokens", async () => {
+  //   await claimtoken.transfer(claim.address, ethers.utils.parseUnits("100000", 18));
+  //   await burntoken.approve(claim.address, ethers.utils.parseUnits("1000", 9));
+  //   const burnBalBef = await burntoken.balanceOf(accounts[0].address);
+  //   const claimBalBef = await claimtoken.balanceOf(accounts[0].address);
+
+  //   await claim.claim(ethers.utils.parseUnits("100", 9));
+
+  //   const burnBalAft = await burntoken.balanceOf(accounts[0].address);
+  //   const claimBalAft = await claimtoken.balanceOf(accounts[0].address);
+
+  //   expect(burnBalBef.sub(burnBalAft)).to.equal(ethers.utils.parseUnits("100", 9));
+  //   expect(claimBalAft.sub(claimBalBef)).to.equal(ethers.utils.parseUnits("100000", 18));
+  // })
+
+  it("Should add whitelisted users", async () => {
+    await claim.addWhitelistedUsers([accounts[0].address, accounts[1].address, accounts[2].address, accounts[3].address, accounts[4].address], ["1000", "2000", "3000", "4000", "5000"]);
   })
 
-  it("Should claim tokens", async () => {
+  it("Should claim reward", async () => {
     await claimtoken.transfer(claim.address, ethers.utils.parseUnits("100000", 18));
-    await burntoken.approve(claim.address, ethers.utils.parseUnits("1000", 9));
-    const burnBalBef = await burntoken.balanceOf(accounts[0].address);
-    const claimBalBef = await claimtoken.balanceOf(accounts[0].address);
 
-    await claim.claim(ethers.utils.parseUnits("100", 9));
+    const balAcc0Bef = await claimtoken.balanceOf(accounts[0].address);
+    const balAcc1Bef = await claimtoken.balanceOf(accounts[1].address);
+    const balAcc2Bef = await claimtoken.balanceOf(accounts[2].address);
+    const balAcc3Bef = await claimtoken.balanceOf(accounts[3].address);
+    const balAcc4Bef = await claimtoken.balanceOf(accounts[4].address);
+    
+    await claim.claim()
+    await claim.connect(accounts[1]).claim()
+    await claim.connect(accounts[2]).claim()
+    await claim.connect(accounts[3]).claim()
+    await claim.connect(accounts[4]).claim()
 
-    const burnBalAft = await burntoken.balanceOf(accounts[0].address);
-    const claimBalAft = await claimtoken.balanceOf(accounts[0].address);
+    await expect(claim.claim()).to.be.revertedWith("Claim: Already claimed or no claim");
+    await expect(claim.connect(accounts[5]).claim()).to.be.revertedWith("Claim: Already claimed or no claim");
+    
+    const balAcc0Aft = await claimtoken.balanceOf(accounts[0].address);
+    const balAcc1Aft = await claimtoken.balanceOf(accounts[1].address);
+    const balAcc2Aft = await claimtoken.balanceOf(accounts[2].address);
+    const balAcc3Aft = await claimtoken.balanceOf(accounts[3].address);
+    const balAcc4Aft = await claimtoken.balanceOf(accounts[4].address);
 
-    expect(burnBalBef.sub(burnBalAft)).to.equal(ethers.utils.parseUnits("100", 9));
-    expect(claimBalAft.sub(claimBalBef)).to.equal(ethers.utils.parseUnits("100000", 18));
+    expect(balAcc0Aft.sub(balAcc0Bef)).to.equal("1000");
+    expect(balAcc1Aft.sub(balAcc1Bef)).to.equal("2000");
+    expect(balAcc2Aft.sub(balAcc2Bef)).to.equal("3000");
+    expect(balAcc3Aft.sub(balAcc3Bef)).to.equal("4000");
+    expect(balAcc4Aft.sub(balAcc4Bef)).to.equal("5000");
   })
 
 });
